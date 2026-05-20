@@ -26,3 +26,4 @@ contextBridge.exposeInMainWorld('electronAPI', {
 
 // Log success
 console.log('✅ Preload: Full ipcRenderer exposed under window.ipcRenderer');
+console.log('Preload loaded. Full Node.js integration enabled.');
