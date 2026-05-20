@@ -1,1 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>ShadowRecon – Ultimate Security Feed</title>
+    <!-- Tailwind CSS + Fonts -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        /* Custom cyberpunk overrides */
+        body {
+            font-family: 'Inter', monospace;
+            background: radial-gradient(circle at 20% 30%, #0c0f1c, #020408);
+        }
+        .neon-border {
+            box-shadow: 0 0 8px rgba(0, 255, 255, 0.3), inset 0 0 4px rgba(0, 255, 255, 0.2);
+        }
+        .glow-btn {
+            transition: all 0.2s ease;
+            box-shadow: 0 0 5px #00ffff;
+        }
+        .glow-btn:hover {
+            box-shadow: 0 0 20px #00ffff;
+            transform: scale(1.02);
+        }
+        .feed-row {
+            transition: background 0.1s linear;
+            border-left: 3px solid #0ff;
+        }
+        .feed-row:hover {
+            background: rgba(0, 255, 255, 0.1);
+            cursor: pointer;
+        }
+        .code-editor {
+            background: #0a0c14;
+            border: 1px solid #2a3a5a;
+            border-radius: 12px;
+            font-family: 'Fira Code', monospace;
+            font-size: 12px;
+            padding: 12px;
+            color: #ccddee;
+            white-space: pre-wrap;
+            word-break: break-all;
+            height: 45%;
+            overflow: auto;
+        }
+        .scrollbar-custom::-webkit-scrollbar {
+            width: 6px;
+        }
+        .scrollbar-custom::-webkit-scrollbar-track {
+            background: #0a0c14;
+        }
+        .scrollbar-custom::-webkit-scrollbar-thumb {
+            background: #0ff;
+            border-radius: 4px;
+        }
+        .gold-btn {
+            background: linear-gradient(135deg, #f5b042, #d98a2c);
+            box-shadow: 0 0 12px #ffaa33;
+            border: none;
+        }
+        .gold-btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 24px #ffaa55;
+        }
+        .cyber-card {
+            background: rgba(10, 15, 30, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(0, 255, 255, 0.2);
+            border-radius: 20px;
+        }
+    </style>
+</head>
+<body class="text-gray-200 overflow-hidden h-screen flex flex-col">
 
+    <!-- Top Bar: Target Scope + Main Button -->
+    <div class="flex items-center justify-between p-4 bg-black/40 backdrop-blur-md border-b border-cyan-800/60">
+        <div class="flex items-center gap-4 w-2/3">
+            <span class="text-cyan-400 font-bold text-xl tracking-wider">🎯 TARGET SCOPE</span>
+            <input type="text" id="target-input" placeholder="https://example.com or 192.168.1.1" 
+                   class="flex-1 bg-gray-900 border border-cyan-700 rounded-xl px-5 py-2 text-white font-mono focus:outline-none focus:ring-2 focus:ring-cyan-500">
+        </div>
+        <button id="btn-launch-all" 
+                class="glow-btn bg-cyan-900/70 border border-cyan-400 rounded-full px-6 py-2 font-bold flex items-center gap-2 hover:bg-cyan-800 transition">
+            ⚡ START AGGRESSIVE UNIFIED DISCOVERY
+        </button>
+    </div>
+
+    <!-- Main Body: Split Layout (Feed + Right Panel) -->
+    <div class="flex flex-1 overflow-hidden p-4 gap-4">
+        <!-- Left: Unified Feed -->
+        <div class="flex-1 flex flex-col cyber-card overflow-hidden">
+            <div class="px-4 py-2 border-b border-cyan-800/60 flex justify-between items-center">
+                <span class="text-cyan-300 font-bold">📡 MASTER UNIFIED FEED (30 Modules)</span>
+                <span id="feed-counter" class="text-xs text-gray-400">0 events</span>
+            </div>
+            <div id="unified-feed" class="flex-1 overflow-y-auto p-2 space-y-1 scrollbar-custom font-mono text-sm">
+                <!-- Dynamic feed rows will appear here -->
+                <div class="text-center text-gray-500 py-10">🚀 Click START to begin reconnaissance...</div>
+            </div>
+        </div>
+
+        <!-- Right Split Panel: Request + Response Viewers -->
+        <div class="w-2/5 flex flex-col gap-3 cyber-card p-3">
+            <div class="flex-1 flex flex-col">
+                <div class="text-cyan-300 text-sm font-bold mb-1">📤 RAW REQUEST HEADERS</div>
+                <div id="raw-request-viewer" class="code-editor">Click any feed item to see request headers...</div>
+            </div>
+            <div class="flex-1 flex flex-col">
+                <div class="text-cyan-300 text-sm font-bold mb-1">📥 RAW RESPONSE BODY / DECODED</div>
+                <div id="raw-response-viewer" class="code-editor">Response body / decoded payload will appear here...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Panel: AI Fast Brain + Export Button -->
+    <div class="flex items-center justify-between p-4 bg-black/40 backdrop-blur-md border-t border-cyan-800/60">
+        <button id="btn-filter-noise" 
+                class="bg-purple-900/70 border border-purple-500 rounded-full px-5 py-2 flex items-center gap-2 hover:bg-purple-800 transition">
+            🧠 AI FAST BRAIN (Filter Noise)
+        </button>
+        <button id="btn-ai-export" 
+                class="gold-btn rounded-full px-6 py-2 font-bold flex items-center gap-2 text-black">
+            🤖 COMPILE & EXPORT FOR DEEPSEEK
+        </button>
+    </div>
+
+    <script>
+        // ------------------ FAKE IPC BRIDGE (for development, will be replaced by real preload) ------------------
+        // In production, these functions will call window.electronAPI
+        window.electronAPI = {
+            startUnifiedScan: (target) => { console.log('Scan started for:', target); },
+            onFeedUpdate: (callback) => { window.feedCallback = callback; },
+            filterNoise: () => console.log('Filter noise'),
+            exportData: () => console.log('Export data')
+        };
+
+        // Global feed array
+        let feedData = [];
+        let selectedEntryId = null;
+
+        // Add entry to feed UI and memory
+        function addFeedEntry(moduleName, details, requestRaw = '', responseRaw = '') {
+            const id = Date.now() + '-' + Math.random().toString(36).substr(2, 6);
+            const timestamp = new Date().toLocaleTimeString();
+            const entry = { id, moduleName, details, timestamp, requestRaw, responseRaw };
+            feedData.push(entry);
+            if (feedData.length > 500) feedData.shift();
+            updateFeedUI();
+            // auto-scroll to bottom
+            const container = document.getElementById('unified-feed');
+            container.scrollTop = container.scrollHeight;
+            document.getElementById('feed-counter').innerText = feedData.length + ' events';
+        }
+
+        function updateFeedUI() {
+            const container = document.getElementById('unified-feed');
+            if (!container) return;
+            container.innerHTML = '';
+            feedData.forEach(entry => {
+                const row = document.createElement('div');
+                row.className = 'feed-row p-2 rounded-md text-xs border-b border-gray-800';
+                row.setAttribute('data-id', entry.id);
+                row.innerHTML = `
+                    <div class="flex justify-between">
+                        <span class="text-cyan-400 font-bold">[${entry.moduleName}]</span>
+                        <span class="text-gray-500">${entry.timestamp}</span>
+                    </div>
+                    <div class="text-gray-300 mt-1 break-all">${escapeHtml(entry.details)}</div>
+                `;
+                row.addEventListener('click', () => {
+                    selectedEntryId = entry.id;
+                    document.getElementById('raw-request-viewer').innerText = entry.requestRaw || '⚠️ No request data captured for this item.';
+                    document.getElementById('raw-response-viewer').innerText = entry.responseRaw || '⚠️ No response data captured.';
+                });
+                container.appendChild(row);
+            });
+            if (feedData.length === 0) {
+                container.innerHTML = '<div class="text-center text-gray-500 py-10">🚀 Click START to begin reconnaissance...</div>';
+            }
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
+
+        // Simulate feed updates for demo (will be replaced by real IPC)
+        function demoSimulate() {
+            const modules = ['Silent HTTP Proxy', 'SYN Port Scanner', 'JS API Extractor', 'Subdomain Bruter', 'CORS Scanner', 'JWT Debugger', 'SSRF Detector'];
+            setInterval(() => {
+                if (feedData.length > 10) return;
+                const rand = modules[Math.floor(Math.random() * modules.length)];
+                addFeedEntry(rand, `Found interesting endpoint: https://example.com/api/v1/user?id=1234`, 
+                    `GET /api/v1/user?id=1234 HTTP/1.1\nHost: example.com\nAuthorization: Bearer token123`,
+                    `{"id":1234,"name":"test","email":"test@example.com"}`);
+            }, 3000);
+        }
+
+        // Real IPC listeners (will connect via preload)
+        window.electronAPI.onFeedUpdate((data) => {
+            addFeedEntry(data.module, data.details, data.request, data.response);
+        });
+
+        // Button handlers
+        document.getElementById('btn-launch-all').addEventListener('click', () => {
+            const target = document.getElementById('target-input').value;
+            if (!target) {
+                addFeedEntry('SYSTEM', '❌ Please enter a target URL or IP address.', '', '');
+                return;
+            }
+            addFeedEntry('SYSTEM', `🚀 Starting aggressive unified discovery on ${target} ...`, '', '');
+            window.electronAPI.startUnifiedScan(target);
+            // For demo, start simulation after 2 seconds
+            setTimeout(() => demoSimulate(), 2000);
+        });
+
+        document.getElementById('btn-filter-noise').addEventListener('click', () => {
+            // Simple filter: remove entries with "404" or "Not Found"
+            const before = feedData.length;
+            feedData = feedData.filter(entry => !entry.details.includes('404') && !entry.details.includes('Not Found'));
+            updateFeedUI();
+            document.getElementById('feed-counter').innerText = feedData.length + ' events';
+            addFeedEntry('AI FAST BRAIN', `Filtered ${before - feedData.length} noisy entries.`, '', '');
+        });
+
+        document.getElementById('btn-ai-export').addEventListener('click', () => {
+            let exportText = `=== SHADOWRECON UNIFIED REPORT ===\nTarget: ${document.getElementById('target-input').value}\nTimestamp: ${new Date().toISOString()}\nTotal Events: ${feedData.length}\n\n`;
+            feedData.forEach(entry => {
+                exportText += `[${entry.timestamp}] ${entry.moduleName}\n${entry.details}\n---\n`;
+                if (entry.requestRaw) exportText += `REQUEST:\n${entry.requestRaw}\n`;
+                if (entry.responseRaw) exportText += `RESPONSE:\n${entry.responseRaw}\n`;
+                exportText += `-----------------------------------\n`;
+            });
+            // In real app, save to file via electron
+            console.log(exportText);
+            alert('✅ Export compiled! Check console for preview. In final app, this will save to file.');
+            window.electronAPI.exportData(exportText);
+        });
+
+        // Initial message
+        addFeedEntry('SYSTEM', 'ShadowRecon UI ready. Enter target and press START.', '', '');
+    </script>
+</body>
+</html>
