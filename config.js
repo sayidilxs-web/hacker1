@@ -1,4 +1,3 @@
-// config.js - Central configuration
 const path = require('path');
 module.exports = {
     DATA_DIR: path.join(__dirname, 'data'),
