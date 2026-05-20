@@ -10,107 +10,164 @@
 </head>
 <body class="text-gray-200 overflow-hidden h-screen flex flex-col">
 
-<div class="flex items-center justify-between p-4 bg-black/40 backdrop-blur-md border-b border-cyan-800/60">
-    <div class="flex items-center gap-4 w-2/3">
-        <span class="text-cyan-400 font-bold text-xl tracking-wider">🎯 TARGET SCOPE</span>
-        <input type="text" id="target-input" placeholder="example.com or 192.168.1.1" 
-               class="flex-1 bg-gray-900 border border-cyan-700 rounded-xl px-5 py-2 text-white font-mono focus:outline-none focus:ring-2 focus:ring-cyan-500">
-    </div>
-    <button id="btn-launch-all" class="glow-btn bg-cyan-900/70 border border-cyan-400 rounded-full px-6 py-2 font-bold flex items-center gap-2 hover:bg-cyan-800 transition">
-        ⚡ START AGGRESSIVE UNIFIED DISCOVERY
-    </button>
-</div>
-
-<div class="flex flex-1 overflow-hidden p-4 gap-4">
-    <div class="flex-1 flex flex-col cyber-card overflow-hidden">
-        <div class="px-4 py-2 border-b border-cyan-800/60 flex justify-between items-center">
-            <span class="text-cyan-300 font-bold">📡 MASTER UNIFIED FEED (30 Modules)</span>
-            <span id="feed-counter" class="text-xs text-gray-400">0 events</span>
+    <!-- Top Bar (same as before) -->
+    <div class="flex items-center justify-between p-4 bg-black/40 backdrop-blur-md border-b border-cyan-800/60">
+        <div class="flex items-center gap-4 w-2/3">
+            <span class="text-cyan-400 font-bold text-xl tracking-wider">🎯 TARGET SCOPE</span>
+            <input type="text" id="target-input" placeholder="example.com or 192.168.1.1" 
+                   class="flex-1 bg-gray-900 border border-cyan-700 rounded-xl px-5 py-2 text-white font-mono focus:outline-none focus:ring-2 focus:ring-cyan-500">
         </div>
-        <div id="unified-feed" class="flex-1 overflow-y-auto p-2 space-y-1 scrollbar-custom font-mono text-sm">
-            <div class="text-center text-gray-500 py-10">🚀 Click START to begin reconnaissance...</div>
-        </div>
+        <button id="btn-launch-all" class="glow-btn bg-cyan-900/70 border border-cyan-400 rounded-full px-6 py-2 font-bold flex items-center gap-2 hover:bg-cyan-800 transition">
+            ⚡ START AGGRESSIVE UNIFIED DISCOVERY
+        </button>
     </div>
 
-    <div class="w-2/5 flex flex-col gap-3 cyber-card p-3">
-        <div class="flex-1 flex flex-col">
-            <div class="text-cyan-300 text-sm font-bold mb-1">📤 RAW REQUEST HEADERS</div>
-            <div id="raw-request-viewer" class="code-editor">Click any feed item to see request headers...</div>
+    <!-- Tab Navigation (NEW) -->
+    <div class="flex px-4 pt-2 gap-2 bg-black/30">
+        <button id="tab-feed-btn" class="px-4 py-2 rounded-t-lg bg-cyan-900/50 text-cyan-300 border-t border-x border-cyan-500">📡 LIVE FEED</button>
+        <button id="tab-browser-btn" class="px-4 py-2 rounded-t-lg bg-gray-800/50 text-gray-400">🌐 BROWSER (Chromium)</button>
+    </div>
+
+    <!-- Main Body: Two Views (Feed View + Browser View) -->
+    <div class="flex flex-1 overflow-hidden p-4 gap-4">
+        <!-- FEED VIEW (visible by default) -->
+        <div id="feed-view" class="flex-1 flex flex-col cyber-card overflow-hidden">
+            <div class="px-4 py-2 border-b border-cyan-800/60 flex justify-between items-center">
+                <span class="text-cyan-300 font-bold">📡 MASTER UNIFIED FEED (30 Modules)</span>
+                <span id="feed-counter" class="text-xs text-gray-400">0 events</span>
+            </div>
+            <div id="unified-feed" class="flex-1 overflow-y-auto p-2 space-y-1 scrollbar-custom font-mono text-sm">
+                <div class="text-center text-gray-500 py-10">🚀 Click START to begin reconnaissance...</div>
+            </div>
         </div>
-        <div class="flex-1 flex flex-col">
-            <div class="text-cyan-300 text-sm font-bold mb-1">📥 RAW RESPONSE BODY / DECODED</div>
-            <div id="raw-response-viewer" class="code-editor">Response body / decoded payload will appear here...</div>
+
+        <!-- BROWSER VIEW (hidden initially) -->
+        <div id="browser-view" class="flex-1 flex flex-col cyber-card overflow-hidden hidden">
+            <div class="px-4 py-2 border-b border-cyan-800/60 flex items-center gap-2">
+                <input type="text" id="browser-url" placeholder="https://example.com" class="flex-1 bg-gray-900 border border-cyan-700 rounded-xl px-4 py-1 text-white font-mono text-sm">
+                <button id="browser-go" class="bg-cyan-700 px-4 py-1 rounded-full text-sm">GO</button>
+                <button id="browser-back" class="bg-gray-700 px-3 py-1 rounded-full">◀</button>
+                <button id="browser-forward" class="bg-gray-700 px-3 py-1 rounded-full">▶</button>
+                <button id="browser-refresh" class="bg-gray-700 px-3 py-1 rounded-full">⟳</button>
+            </div>
+            <webview id="webview" src="https://example.com" style="width:100%; height:100%;" partition="persist:webview"></webview>
+        </div>
+
+        <!-- Right Panel (unchanged) -->
+        <div class="w-2/5 flex flex-col gap-3 cyber-card p-3">
+            <div class="flex-1 flex flex-col">
+                <div class="text-cyan-300 text-sm font-bold mb-1">📤 RAW REQUEST HEADERS</div>
+                <div id="raw-request-viewer" class="code-editor">Click any feed item to see request headers...</div>
+            </div>
+            <div class="flex-1 flex flex-col">
+                <div class="text-cyan-300 text-sm font-bold mb-1">📥 RAW RESPONSE BODY / DECODED</div>
+                <div id="raw-response-viewer" class="code-editor">Response body / decoded payload will appear here...</div>
+            </div>
         </div>
     </div>
-</div>
 
-<div class="flex items-center justify-between p-4 bg-black/40 backdrop-blur-md border-t border-cyan-800/60">
-    <button id="btn-filter-noise" class="bg-purple-900/70 border border-purple-500 rounded-full px-5 py-2 flex items-center gap-2 hover:bg-purple-800 transition">
-        🧠 AI FAST BRAIN (Filter Noise)
-    </button>
-    <button id="btn-ai-export" class="gold-btn rounded-full px-6 py-2 font-bold flex items-center gap-2 text-black">
-        🤖 COMPILE & EXPORT FOR DEEPSEEK
-    </button>
-</div>
+    <!-- Bottom Panel (unchanged) -->
+    <div class="flex items-center justify-between p-4 bg-black/40 backdrop-blur-md border-t border-cyan-800/60">
+        <button id="btn-filter-noise" class="bg-purple-900/70 border border-purple-500 rounded-full px-5 py-2 flex items-center gap-2 hover:bg-purple-800 transition">
+            🧠 AI FAST BRAIN (Filter Noise)
+        </button>
+        <button id="btn-ai-export" class="gold-btn rounded-full px-6 py-2 font-bold flex items-center gap-2 text-black">
+            🤖 COMPILE & EXPORT FOR DEEPSEEK
+        </button>
+    </div>
 
-<script>
-    const { ipcRenderer } = require('electron');
-    let feedData = [];
+    <script>
+        const { ipcRenderer } = require('electron');
+        let feedData = [];
 
-    function addFeedEntry(moduleName, details, requestRaw = '', responseRaw = '') {
-        const id = Date.now() + '-' + Math.random().toString(36).substr(2, 6);
-        const timestamp = new Date().toLocaleTimeString();
-        feedData.push({ id, moduleName, details, timestamp, requestRaw, responseRaw });
-        if (feedData.length > 500) feedData.shift();
-        updateFeedUI();
-        document.getElementById('feed-counter').innerText = feedData.length + ' events';
-    }
+        function addFeedEntry(moduleName, details, requestRaw = '', responseRaw = '') {
+            const id = Date.now() + '-' + Math.random().toString(36).substr(2, 6);
+            const timestamp = new Date().toLocaleTimeString();
+            feedData.push({ id, moduleName, details, timestamp, requestRaw, responseRaw });
+            if (feedData.length > 500) feedData.shift();
+            updateFeedUI();
+            document.getElementById('feed-counter').innerText = feedData.length + ' events';
+        }
 
-    function updateFeedUI() {
-        const container = document.getElementById('unified-feed');
-        if (!container) return;
-        container.innerHTML = '';
-        feedData.forEach(entry => {
-            const row = document.createElement('div');
-            row.className = 'feed-row p-2 rounded-md text-xs border-b border-gray-800';
-            row.setAttribute('data-id', entry.id);
-            row.innerHTML = `<div class="flex justify-between"><span class="text-cyan-400 font-bold">[${entry.moduleName}]</span><span class="text-gray-500">${entry.timestamp}</span></div><div class="text-gray-300 mt-1 break-all">${escapeHtml(entry.details)}</div>`;
-            row.addEventListener('click', () => {
-                document.getElementById('raw-request-viewer').innerText = entry.requestRaw || '⚠️ No request data';
-                document.getElementById('raw-response-viewer').innerText = entry.responseRaw || '⚠️ No response data';
+        function updateFeedUI() {
+            const container = document.getElementById('unified-feed');
+            container.innerHTML = '';
+            feedData.forEach(entry => {
+                const row = document.createElement('div');
+                row.className = 'feed-row p-2 rounded-md text-xs border-b border-gray-800';
+                row.setAttribute('data-id', entry.id);
+                row.innerHTML = `<div class="flex justify-between"><span class="text-cyan-400 font-bold">[${entry.moduleName}]</span><span class="text-gray-500">${entry.timestamp}</span></div><div class="text-gray-300 mt-1 break-all">${escapeHtml(entry.details)}</div>`;
+                row.addEventListener('click', () => {
+                    document.getElementById('raw-request-viewer').innerText = entry.requestRaw || '⚠️ No request data';
+                    document.getElementById('raw-response-viewer').innerText = entry.responseRaw || '⚠️ No response data';
+                });
+                container.appendChild(row);
             });
-            container.appendChild(row);
+            if (feedData.length === 0) container.innerHTML = '<div class="text-center text-gray-500 py-10">🚀 Click START to begin reconnaissance...</div>';
+            else container.scrollTop = container.scrollHeight;
+        }
+
+        function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m])); }
+
+        // Tab switching
+        const feedView = document.getElementById('feed-view');
+        const browserView = document.getElementById('browser-view');
+        const feedBtn = document.getElementById('tab-feed-btn');
+        const browserBtn = document.getElementById('tab-browser-btn');
+        feedBtn.addEventListener('click', () => {
+            feedView.classList.remove('hidden');
+            browserView.classList.add('hidden');
+            feedBtn.classList.add('bg-cyan-900/50', 'text-cyan-300', 'border-t', 'border-x', 'border-cyan-500');
+            feedBtn.classList.remove('bg-gray-800/50', 'text-gray-400');
+            browserBtn.classList.add('bg-gray-800/50', 'text-gray-400');
+            browserBtn.classList.remove('bg-cyan-900/50', 'text-cyan-300', 'border-t', 'border-x', 'border-cyan-500');
         });
-        if (feedData.length === 0) container.innerHTML = '<div class="text-center text-gray-500 py-10">🚀 Click START to begin reconnaissance...</div>';
-        else container.scrollTop = container.scrollHeight;
-    }
+        browserBtn.addEventListener('click', () => {
+            browserView.classList.remove('hidden');
+            feedView.classList.add('hidden');
+            browserBtn.classList.add('bg-cyan-900/50', 'text-cyan-300', 'border-t', 'border-x', 'border-cyan-500');
+            browserBtn.classList.remove('bg-gray-800/50', 'text-gray-400');
+            feedBtn.classList.add('bg-gray-800/50', 'text-gray-400');
+            feedBtn.classList.remove('bg-cyan-900/50', 'text-cyan-300', 'border-t', 'border-x', 'border-cyan-500');
+        });
 
-    function escapeHtml(str) {
-        if (!str) return '';
-        return str.replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m]));
-    }
+        // Webview controls
+        const webview = document.getElementById('webview');
+        document.getElementById('browser-go').addEventListener('click', () => {
+            let url = document.getElementById('browser-url').value;
+            if (!url.startsWith('http')) url = 'https://' + url;
+            webview.src = url;
+        });
+        document.getElementById('browser-back').addEventListener('click', () => { if (webview.canGoBack()) webview.goBack(); });
+        document.getElementById('browser-forward').addEventListener('click', () => { if (webview.canGoForward()) webview.goForward(); });
+        document.getElementById('browser-refresh').addEventListener('click', () => webview.reload());
+        webview.addEventListener('did-navigate', (event) => {
+            document.getElementById('browser-url').value = event.url;
+        });
+        webview.addEventListener('did-navigate-in-page', (event) => {
+            document.getElementById('browser-url').value = event.url;
+        });
 
-    ipcRenderer.on('feed-update', (event, data) => addFeedEntry(data.module, data.details, data.request, data.response));
+        // IPC feed listener
+        ipcRenderer.on('feed-update', (event, data) => addFeedEntry(data.module, data.details, data.request, data.response));
 
-    document.getElementById('btn-launch-all').addEventListener('click', () => {
-        const target = document.getElementById('target-input').value.trim();
-        if (!target) { addFeedEntry('SYSTEM', '❌ Please enter a target', '', ''); return; }
-        addFeedEntry('SYSTEM', `🚀 Starting unified discovery on ${target} ...`, '', '');
-        ipcRenderer.invoke('run-unified-scan', target).catch(err => addFeedEntry('ERROR', err.message, '', ''));
-    });
-
-    document.getElementById('btn-filter-noise').addEventListener('click', async () => {
-        const result = await ipcRenderer.invoke('filter-noise');
-        addFeedEntry('AI FAST BRAIN', `Filtered ${result.removed} noisy entries.`, '', '');
-    });
-
-    document.getElementById('btn-ai-export').addEventListener('click', async () => {
-        const target = document.getElementById('target-input').value || 'unknown';
-        const filePath = await ipcRenderer.invoke('export-for-ai', target);
-        addFeedEntry('EXPORT', `Report saved to: ${filePath}`, '', '');
-    });
-
-    addFeedEntry('SYSTEM', 'ShadowRecon UI ready. Enter target and press START.', '', '');
-</script>
+        // Buttons
+        document.getElementById('btn-launch-all').addEventListener('click', () => {
+            const target = document.getElementById('target-input').value.trim();
+            if (!target) { addFeedEntry('SYSTEM', '❌ Please enter a target', '', ''); return; }
+            addFeedEntry('SYSTEM', `🚀 Starting unified discovery on ${target} ...`, '', '');
+            ipcRenderer.invoke('run-unified-scan', target).catch(err => addFeedEntry('ERROR', err.message, '', ''));
+        });
+        document.getElementById('btn-filter-noise').addEventListener('click', async () => {
+            const result = await ipcRenderer.invoke('filter-noise');
+            addFeedEntry('AI FAST BRAIN', `Filtered ${result.removed} noisy entries.`, '', '');
+        });
+        document.getElementById('btn-ai-export').addEventListener('click', async () => {
+            const target = document.getElementById('target-input').value || 'unknown';
+            const filePath = await ipcRenderer.invoke('export-for-ai', target);
+            addFeedEntry('EXPORT', `Report saved to: ${filePath}`, '', '');
+        });
+        addFeedEntry('SYSTEM', 'ShadowRecon UI ready. Browser tab available. Enter target and press START.', '', '');
+    </script>
 </body>
 </html>
