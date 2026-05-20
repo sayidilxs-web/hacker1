@@ -1,1 +1,226 @@
+/* style.css - Complete Cyberpunk Theme for ShadowRecon */
 
+/* Reset & Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', 'Segoe UI', monospace;
+    background: radial-gradient(circle at 10% 20%, #0a0f1c, #03050b);
+    color: #e2e8f0;
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: #0a0c14;
+}
+::-webkit-scrollbar-thumb {
+    background: #0ff;
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #ff00aa;
+}
+
+/* Glassmorphism Base */
+.glass-panel {
+    background: rgba(10, 15, 30, 0.65);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(0, 255, 255, 0.2);
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* Top Bar */
+.top-bar {
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(0, 255, 255, 0.3);
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.target-input {
+    background: #0f1119;
+    border: 1px solid #0ff;
+    border-radius: 40px;
+    padding: 10px 20px;
+    color: #0ff;
+    font-family: 'Fira Code', monospace;
+    font-size: 0.9rem;
+    width: 60%;
+    outline: none;
+    transition: all 0.2s ease;
+}
+.target-input:focus {
+    box-shadow: 0 0 12px #0ff;
+    border-color: #0ff;
+}
+
+/* Cyberpunk Button */
+.cyber-btn {
+    background: rgba(0, 255, 255, 0.1);
+    border: 1px solid #0ff;
+    border-radius: 40px;
+    padding: 10px 24px;
+    font-weight: bold;
+    color: #0ff;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+.cyber-btn:hover {
+    background: rgba(0, 255, 255, 0.3);
+    box-shadow: 0 0 15px #0ff;
+    transform: scale(1.02);
+}
+
+/* Gold Special Button */
+.gold-btn {
+    background: linear-gradient(135deg, #ffb347, #ff8800);
+    border: none;
+    border-radius: 40px;
+    padding: 10px 28px;
+    font-weight: bold;
+    color: #000;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 0 8px #ffaa33;
+}
+.gold-btn:hover {
+    transform: scale(1.02);
+    box-shadow: 0 0 20px #ffaa55;
+}
+
+/* Unified Feed Container */
+.feed-container {
+    background: rgba(5, 10, 20, 0.6);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(0, 255, 255, 0.2);
+    border-radius: 16px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.feed-header {
+    background: rgba(0, 0, 0, 0.5);
+    border-bottom: 1px solid #0ff;
+    padding: 12px 16px;
+    font-weight: bold;
+    color: #0ff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.feed-area {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px;
+}
+
+/* Feed Items */
+.feed-row {
+    background: rgba(0, 20, 40, 0.4);
+    border-left: 4px solid #0ff;
+    border-radius: 12px;
+    margin-bottom: 8px;
+    padding: 12px;
+    transition: all 0.1s ease;
+    cursor: pointer;
+}
+.feed-row:hover {
+    background: rgba(0, 255, 255, 0.15);
+    transform: translateX(4px);
+}
+.feed-row-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 6px;
+    font-size: 0.75rem;
+}
+.feed-module {
+    color: #0ff;
+    font-weight: bold;
+}
+.feed-time {
+    color: #66b5ff;
+    font-family: monospace;
+}
+.feed-detail {
+    font-family: 'Fira Code', monospace;
+    font-size: 0.75rem;
+    color: #bbd9ff;
+    word-break: break-word;
+    white-space: pre-wrap;
+}
+
+/* Right Panel Code Editors */
+.code-editor {
+    background: #0a0c14;
+    border: 1px solid #2a4c6e;
+    border-radius: 12px;
+    font-family: 'Fira Code', monospace;
+    font-size: 11px;
+    padding: 12px;
+    color: #ccddee;
+    white-space: pre-wrap;
+    word-break: break-all;
+    height: 45%;
+    overflow: auto;
+    resize: none;
+}
+.editor-header {
+    color: #0ff;
+    font-size: 0.8rem;
+    margin-bottom: 6px;
+    font-weight: bold;
+}
+
+/* Bottom Panel */
+.bottom-panel {
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(16px);
+    border-top: 1px solid #0ff;
+    padding: 12px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .top-bar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .target-input {
+        width: 100%;
+    }
+    .feed-container {
+        height: 60vh;
+    }
+}
