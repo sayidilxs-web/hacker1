@@ -1,6 +1,6 @@
 {
   "name": "shadowrecon-ultimate",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "World's most powerful all-in-one security testing, network recon & traffic analyst desktop app",
   "main": "main.js",
   "scripts": {
@@ -15,11 +15,8 @@
   },
   "dependencies": {
     "axios": "^1.6.0",
-    "dns-packet": "^5.6.0",
-    "http-proxy-agent": "^7.0.0",
-    "https-proxy-agent": "^7.0.0",
+    "whois-json": "^2.0.0",
     "jws": "^4.0.0",
-    "net": "^1.0.2",
-    "whois-json": "^2.0.0"
+    "net": "^1.0.2"
   }
 }
