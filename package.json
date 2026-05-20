@@ -1,6 +1,6 @@
 {
   "name": "shadowrecon-ultimate",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "World's most powerful all-in-one security testing, network recon & traffic analyst desktop app",
   "main": "main.js",
   "scripts": {
@@ -17,5 +17,20 @@
     "axios": "^1.6.0",
     "whois-json": "^2.0.0",
     "jws": "^4.0.0"
+  },
+  "build": {
+    "appId": "com.sayidilxs.shadowrecon",
+    "productName": "ShadowRecon Ultimate",
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "target": "nsis",
+      "icon": "assets/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
   }
 }
