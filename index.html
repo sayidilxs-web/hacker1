@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>ShadowRecon – Ultimate Security Feed</title>
+    <title>ShadowRecon Ultimate</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body class="text-gray-200 overflow-hidden h-screen flex flex-col">
 
-    <!-- Top Bar (same as before) -->
+    <!-- Top Bar -->
     <div class="flex items-center justify-between p-4 bg-black/40 backdrop-blur-md border-b border-cyan-800/60">
         <div class="flex items-center gap-4 w-2/3">
             <span class="text-cyan-400 font-bold text-xl tracking-wider">🎯 TARGET SCOPE</span>
@@ -22,15 +22,15 @@
         </button>
     </div>
 
-    <!-- Tab Navigation (NEW) -->
+    <!-- Tab Navigation -->
     <div class="flex px-4 pt-2 gap-2 bg-black/30">
         <button id="tab-feed-btn" class="px-4 py-2 rounded-t-lg bg-cyan-900/50 text-cyan-300 border-t border-x border-cyan-500">📡 LIVE FEED</button>
         <button id="tab-browser-btn" class="px-4 py-2 rounded-t-lg bg-gray-800/50 text-gray-400">🌐 BROWSER (Chromium)</button>
     </div>
 
-    <!-- Main Body: Two Views (Feed View + Browser View) -->
+    <!-- Main Area -->
     <div class="flex flex-1 overflow-hidden p-4 gap-4">
-        <!-- FEED VIEW (visible by default) -->
+        <!-- Feed View -->
         <div id="feed-view" class="flex-1 flex flex-col cyber-card overflow-hidden">
             <div class="px-4 py-2 border-b border-cyan-800/60 flex justify-between items-center">
                 <span class="text-cyan-300 font-bold">📡 MASTER UNIFIED FEED (30 Modules)</span>
@@ -41,7 +41,7 @@
             </div>
         </div>
 
-        <!-- BROWSER VIEW (hidden initially) -->
+        <!-- Browser View (initially hidden) -->
         <div id="browser-view" class="flex-1 flex flex-col cyber-card overflow-hidden hidden">
             <div class="px-4 py-2 border-b border-cyan-800/60 flex items-center gap-2">
                 <input type="text" id="browser-url" placeholder="https://example.com" class="flex-1 bg-gray-900 border border-cyan-700 rounded-xl px-4 py-1 text-white font-mono text-sm">
@@ -53,7 +53,7 @@
             <webview id="webview" src="https://example.com" style="width:100%; height:100%;" partition="persist:webview"></webview>
         </div>
 
-        <!-- Right Panel (unchanged) -->
+        <!-- Right Panel -->
         <div class="w-2/5 flex flex-col gap-3 cyber-card p-3">
             <div class="flex-1 flex flex-col">
                 <div class="text-cyan-300 text-sm font-bold mb-1">📤 RAW REQUEST HEADERS</div>
@@ -66,7 +66,7 @@
         </div>
     </div>
 
-    <!-- Bottom Panel (unchanged) -->
+    <!-- Bottom Panel -->
     <div class="flex items-center justify-between p-4 bg-black/40 backdrop-blur-md border-t border-cyan-800/60">
         <button id="btn-filter-noise" class="bg-purple-900/70 border border-purple-500 rounded-full px-5 py-2 flex items-center gap-2 hover:bg-purple-800 transition">
             🧠 AI FAST BRAIN (Filter Noise)
@@ -141,12 +141,8 @@
         document.getElementById('browser-back').addEventListener('click', () => { if (webview.canGoBack()) webview.goBack(); });
         document.getElementById('browser-forward').addEventListener('click', () => { if (webview.canGoForward()) webview.goForward(); });
         document.getElementById('browser-refresh').addEventListener('click', () => webview.reload());
-        webview.addEventListener('did-navigate', (event) => {
-            document.getElementById('browser-url').value = event.url;
-        });
-        webview.addEventListener('did-navigate-in-page', (event) => {
-            document.getElementById('browser-url').value = event.url;
-        });
+        webview.addEventListener('did-navigate', (event) => { document.getElementById('browser-url').value = event.url; });
+        webview.addEventListener('did-navigate-in-page', (event) => { document.getElementById('browser-url').value = event.url; });
 
         // IPC feed listener
         ipcRenderer.on('feed-update', (event, data) => addFeedEntry(data.module, data.details, data.request, data.response));
