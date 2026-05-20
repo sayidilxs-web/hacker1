@@ -1,2 +1,0 @@
-# hacker1
-hack
