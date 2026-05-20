@@ -1,4 +1,3 @@
-// main.js - Electron main process with full 30 modules, nodeIntegration: true
 const { app, BrowserWindow, ipcMain, session } = require('electron');
 const path = require('path');
 const fs = require('fs');
@@ -8,7 +7,6 @@ const axios = require('axios');
 const whois = require('whois-json');
 const jws = require('jws');
 
-// ========== CONFIGURATION ==========
 const DATA_DIR = path.join(__dirname, 'data');
 const TRAFFIC_FILE = path.join(DATA_DIR, 'captured_traffic.json');
 const SCAN_FILE = path.join(DATA_DIR, 'scan_results.json');
@@ -32,7 +30,6 @@ loadLogs();
 function saveTraffic() { fs.writeFileSync(TRAFFIC_FILE, JSON.stringify(captureLog.slice(-MAX_LOG_ENTRIES), null, 2)); }
 function saveScanResults() { fs.writeFileSync(SCAN_FILE, JSON.stringify(scanResults, null, 2)); }
 
-// ========== 1. SILENT HTTP/HTTPS PROXY ==========
 function setupSilentProxy() {
     const filter = { urls: ['<all_urls>'] };
     const ses = mainWindow.webContents.session;
@@ -65,19 +62,6 @@ function setupSilentProxy() {
     });
 }
 
-// ========== 2. TCP/UDP Socket Streamer (TCP demo) ==========
-async function tcpStream(host, port) {
-    return new Promise((resolve) => {
-        const socket = new net.Socket();
-        socket.setTimeout(5000);
-        socket.once('connect', () => { socket.destroy(); resolve(`Connected to ${host}:${port}`); });
-        socket.once('error', (err) => resolve(`Error: ${err.message}`));
-        socket.once('timeout', () => resolve('Timeout'));
-        socket.connect(port, host);
-    });
-}
-
-// ========== 3. SYN Port Scanner (TCP connect) ==========
 async function scanPorts(host, ports = DEFAULT_PORTS) {
     const openPorts = [];
     for (const port of ports) {
@@ -97,23 +81,6 @@ function getService(port) {
     return services[port] || 'unknown';
 }
 
-// ========== 4. Service Banner Grabber ==========
-async function grabBanner(host, port) {
-    return new Promise(resolve => {
-        const socket = new net.Socket();
-        socket.setTimeout(3000);
-        socket.once('connect', () => {
-            socket.write('\r\n');
-            socket.once('data', data => { resolve(data.toString().slice(0,200)); socket.destroy(); });
-            setTimeout(() => resolve('No banner'), 2000);
-        });
-        socket.once('error', () => resolve('Error'));
-        socket.once('timeout', () => resolve('Timeout'));
-        socket.connect(port, host);
-    });
-}
-
-// ========== 5. DNS Enumerator & Subdomain Brute ==========
 async function bruteSubdomains(domain) {
     const wordlist = ['www','mail','ftp','admin','blog','api','dev','test','vpn','remote','webmail','cpanel','ns1','ns2','smtp','pop','imap','cloud','docs','app','login','portal','shop','support','status','dashboard','cdn','static','media','video','images'];
     const found = [];
@@ -123,24 +90,6 @@ async function bruteSubdomains(domain) {
     return found;
 }
 
-// ========== 6. TLS/SSL Cipher Auditor ==========
-async function checkSSL(host) {
-    // Simplified: just return dummy
-    return { host, rating: 'A', ciphers: ['TLS_AES_256_GCM_SHA384','TLS_CHACHA20_POLY1305_SHA256'] };
-}
-
-// ========== 7. Automated JS API Endpoint Extractor ==========
-async function extractAPIEndpoints(url) {
-    // In real version, would fetch HTML and JS files
-    return [`${url}/api/users`, `${url}/api/v1/login`, `${url}/graphql`];
-}
-
-// ========== 8. Subdomain Takeover Checker ==========
-async function checkTakeover(subdomain) {
-    return { subdomain, vulnerable: false };
-}
-
-// ========== 9. Directory & Hidden File Buster ==========
 async function dirBuster(url) {
     const common = ['admin','backup','.git','.env','config','wp-admin','robots.txt','sitemap.xml','swagger'];
     const found = [];
@@ -150,26 +99,6 @@ async function dirBuster(url) {
     return found;
 }
 
-// ========== 10. CORS Misconfiguration Scanner ==========
-async function corsScanner(url) {
-    return { url, misconfigured: false, details: 'Access-Control-Allow-Origin: * not found' };
-}
-
-// ========== 11. Parameter Miner ==========
-async function paramMiner(url) {
-    return ['id', 'user', 'q', 'page', 'sort', 'debug'];
-}
-
-// ========== 12. HTTP Header Security Analyzer ==========
-function analyzeHeaders(headers) {
-    const missing = [];
-    if (!headers['content-security-policy']) missing.push('CSP');
-    if (!headers['x-frame-options']) missing.push('XFO');
-    if (!headers['x-content-type-options']) missing.push('XCTO');
-    return { score: 10 - missing.length*2, missing };
-}
-
-// ========== 13. Wayback Machine URL Crawler ==========
 async function waybackUrls(domain) {
     try {
         const res = await axios.get(`https://web.archive.org/cdx/search/cdx?url=*.${domain}/*&output=json&limit=50`);
@@ -177,7 +106,6 @@ async function waybackUrls(domain) {
     } catch(e) { return []; }
 }
 
-// ========== 14. Git & Config Leak Scanner ==========
 async function leakScanner(url) {
     const paths = ['.git/HEAD', '.env', 'config.php', 'application.properties'];
     const leaks = [];
@@ -187,65 +115,10 @@ async function leakScanner(url) {
     return leaks;
 }
 
-// ========== 15. JWT Token Debugger ==========
-function decodeJWT(token) {
-    if (!token) return null;
-    try { return jws.decode(token); } catch(e) { return null; }
-}
-
-// ========== 16. Shodan/Censys OSINT Integrator ==========
-async function shodanLookup(ip) {
-    return { ip, org: 'Example Corp', ports: [80,443] };
-}
-
-// ========== 17. GraphQL Introspection ==========
-async function graphQLProbe(url) {
-    return { exists: false, message: 'GraphQL not detected' };
-}
-
-// ========== 18. IDOR & Access Control Differ ==========
-async function idorTest(baseUrl, param, value1, value2) {
-    return { vulnerable: false, reason: 'No difference in responses' };
-}
-
-// ========== 19. Real-time Decoder ==========
-function decodeAny(str) {
-    try { return { base64: Buffer.from(str, 'base64').toString(), hex: Buffer.from(str, 'hex').toString(), url: decodeURIComponent(str) }; } catch(e) { return { error: e.message }; }
-}
-
-// ========== 20. XSS Pattern Matcher ==========
-function reflectXSS(url, param, payload) {
-    return { vulnerable: false };
-}
-
-// ========== 21. SSRF Detector ==========
-async function ssrfTest(url) {
-    return { vulnerable: false };
-}
-
-// ========== 22. Rate Limiting Prober ==========
-async function rateLimitTest(url) {
-    let blocked = false;
-    for (let i=0; i<50; i++) { try { await axios.get(url, { timeout: 500 }); } catch(e) { blocked = true; break; } }
-    return { rateLimited: blocked };
-}
-
-// ========== 23. Robots & Sitemap Parser ==========
-async function parseRobots(url) {
-    try { const res = await axios.get(`${url}/robots.txt`); return res.data.split('\n').filter(l=>l.includes('Disallow')); } catch(e) { return []; }
-}
-
-// ========== 24. Whois & IP Geolocation ==========
 async function getWhois(domain) {
     try { return await whois(domain); } catch(e) { return { error: e.message }; }
 }
 
-// ========== 25. Passive DNS / Reverse IP ==========
-async function reverseIP(ip) {
-    return { ip, domains: ['example.com'] };
-}
-
-// ========== 26. Cloud Bucket Hunter (S3) ==========
 async function findBuckets(domain) {
     const names = [`${domain}`, `www-${domain}`, `static-${domain}`];
     const open = [];
@@ -255,31 +128,21 @@ async function findBuckets(domain) {
     return open;
 }
 
-// ========== 27. JS Map File Reconstructor ==========
-async function findMapFiles(url) {
-    return [];
+async function parseRobots(url) {
+    try { const res = await axios.get(`${url}/robots.txt`); return res.data.split('\n').filter(l=>l.includes('Disallow')); } catch(e) { return []; }
 }
 
-// ========== 28. WAF Fingerprinter ==========
-async function wafDetect(url) {
-    return { waf: 'Cloudflare' };
-}
-
-// ========== 29. AI Fast Brain Filter ==========
 function filterNoise(entries) {
     return entries.filter(e => !(e.type==='response' && e.statusCode===404) && !e.details?.includes('favicon'));
 }
 
-// ========== 30. Unified AI Compiler ==========
 function compileForAI(target, logs, scan) {
     let output = `=== SHADOWRECON REPORT ===\nTarget: ${target}\nTimestamp: ${new Date().toISOString()}\n\n[PORT SCAN]\n${JSON.stringify(scan, null, 2)}\n\n[TRAFFIC LOG]\n`;
     logs.slice(-100).forEach(l => output += `${l.timestamp} ${l.method || 'response'} ${l.url || ''}\n`);
     return output;
 }
 
-// ========== IPC HANDLERS ==========
 ipcMain.handle('run-unified-scan', async (event, target) => {
-    // Run essential modules in parallel
     const [subdomains, ports, wayback, dirs, leaks, whoisData, buckets, robots] = await Promise.all([
         bruteSubdomains(target),
         scanPorts(target),
@@ -290,7 +153,6 @@ ipcMain.handle('run-unified-scan', async (event, target) => {
         findBuckets(target),
         parseRobots(`https://${target}`)
     ]);
-    // Send each result as feed update
     mainWindow.webContents.send('feed-update', { module: 'Port Scanner', details: `Open ports: ${ports.map(p=>p.port).join(', ')}`, request: '', response: JSON.stringify(ports) });
     mainWindow.webContents.send('feed-update', { module: 'Subdomain Bruter', details: `Found ${subdomains.length} subdomains`, request: '', response: subdomains.join('\n') });
     mainWindow.webContents.send('feed-update', { module: 'Wayback Crawler', details: `Fetched ${wayback.length} historic URLs`, request: '', response: wayback.slice(0,10).join('\n') });
@@ -316,18 +178,11 @@ ipcMain.handle('export-for-ai', (event, target) => {
     return EXPORT_FILE;
 });
 
-// ========== CREATE WINDOW (nodeIntegration: true) ==========
 function createWindow() {
     mainWindow = new BrowserWindow({
         width: 1400, height: 900,
-        webPreferences: {
-            nodeIntegration: true,
-            contextIsolation: false,
-            preload: path.join(__dirname, 'preload.js')
-        },
-        backgroundColor: '#03050b',
-        titleBarStyle: 'hidden',
-        frame: false
+        webPreferences: { nodeIntegration: true, contextIsolation: false, preload: path.join(__dirname, 'preload.js') },
+        backgroundColor: '#03050b', titleBarStyle: 'hidden', frame: false
     });
     mainWindow.loadFile('index.html');
     mainWindow.on('closed', () => mainWindow = null);
